@@ -6,39 +6,75 @@ const BASE_URL = "http://185.234.247.196:8082"
 const AdminPage = () => {
   const [activeTab, setActiveTab] = useState("tables")
   const [selectedTable, setSelectedTable] = useState(null)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const handleTableSelect = (table) => {
     console.log("Selected table:", table)
     setSelectedTable(table)
     setActiveTab("orders")
+    setIsMobileMenuOpen(false) // Close mobile menu when selecting a table
   }
 
   return (
-    <div className="flex h-screen bg-gray-100">
-      {/* Sidebar */}
-      <div className="w-1/4 bg-blue-600 text-white flex flex-col p-4">
+    <div className="flex flex-col md:flex-row h-screen bg-gray-100">
+      {/* Mobile Header */}
+      <div className="md:hidden bg-blue-600 text-white p-4 flex justify-between items-center">
+        <h1 className="text-xl font-bold">Quản lý nhà hàng</h1>
+        <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2 rounded hover:bg-blue-700">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            {isMobileMenuOpen ? (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            ) : (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            )}
+          </svg>
+        </button>
+      </div>
+
+      {/* Sidebar - Hidden on mobile unless menu is open */}
+      <div
+        className={`${isMobileMenuOpen ? "block" : "hidden"} md:block md:w-1/4 lg:w-1/5 bg-blue-600 text-white flex flex-col p-4 z-10 ${isMobileMenuOpen ? "fixed inset-0 pt-16" : ""}`}
+      >
+        <div className="hidden md:block mb-6">
+          <h1 className="text-xl font-bold">Quản lý nhà hàng</h1>
+        </div>
         <button
-          className={`py-2 px-4 mb-2 rounded ${activeTab === "tables" ? "bg-blue-800" : "hover:bg-blue-700"}`}
-          onClick={() => setActiveTab("tables")}
+          className={`py-3 px-4 mb-2 rounded ${activeTab === "tables" ? "bg-blue-800" : "hover:bg-blue-700"}`}
+          onClick={() => {
+            setActiveTab("tables")
+            setIsMobileMenuOpen(false)
+          }}
         >
           Quản lý bàn
         </button>
         <button
-          className={`py-2 px-4 mb-2 rounded ${activeTab === "dishes" ? "bg-blue-800" : "hover:bg-blue-700"}`}
-          onClick={() => setActiveTab("dishes")}
+          className={`py-3 px-4 mb-2 rounded ${activeTab === "dishes" ? "bg-blue-800" : "hover:bg-blue-700"}`}
+          onClick={() => {
+            setActiveTab("dishes")
+            setIsMobileMenuOpen(false)
+          }}
         >
           Quản lý món ăn
         </button>
         <button
-          className={`py-2 px-4 mb-2 rounded ${activeTab === "orders" ? "bg-blue-800" : "hover:bg-blue-700"}`}
-          onClick={() => setActiveTab("orders")}
+          className={`py-3 px-4 mb-2 rounded ${activeTab === "orders" ? "bg-blue-800" : "hover:bg-blue-700"}`}
+          onClick={() => {
+            setActiveTab("orders")
+            setIsMobileMenuOpen(false)
+          }}
         >
           Đặt món
         </button>
       </div>
 
       {/* Content */}
-      <div className="flex-1 p-6 bg-white overflow-y-auto">
+      <div className="flex-1 p-4 md:p-6 bg-white overflow-y-auto">
         {activeTab === "tables" && <TablesManagement onTableSelect={handleTableSelect} />}
         {activeTab === "dishes" && <DishesManagement />}
         {activeTab === "orders" && <OrdersManagement selectedTable={selectedTable} />}
@@ -229,14 +265,14 @@ const TablesManagement = ({ onTableSelect }) => {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-4">Quản lý bàn</h2>
+      <h2 className="text-xl md:text-2xl font-bold mb-4">Quản lý bàn</h2>
 
       {/* Success or Error Message */}
       {successMessage && (
-        <div className="flex justify-center items-center mb-4">
-          <div className="text-green-600 font-medium">{successMessage}</div>
+        <div className="flex flex-col md:flex-row justify-center items-center mb-4 p-3 bg-green-50 rounded">
+          <div className="text-green-600 font-medium text-center md:text-left mb-2 md:mb-0">{successMessage}</div>
           <button
-            className="ml-4 bg-blue-600 text-white py-1 px-3 rounded text-sm"
+            className="ml-0 md:ml-4 bg-blue-600 text-white py-1 px-3 rounded text-sm"
             onClick={() => setSuccessMessage(null)}
           >
             Đóng
@@ -245,18 +281,22 @@ const TablesManagement = ({ onTableSelect }) => {
       )}
 
       {error && (
-        <div className="flex justify-center items-center mb-4">
-          <div className="text-red-600 font-medium">{error}</div>
-          <button className="ml-4 bg-blue-600 text-white py-1 px-3 rounded text-sm" onClick={fetchTables}>
+        <div className="flex flex-col md:flex-row justify-center items-center mb-4 p-3 bg-red-50 rounded">
+          <div className="text-red-600 font-medium text-center md:text-left mb-2 md:mb-0">{error}</div>
+          <button className="ml-0 md:ml-4 bg-blue-600 text-white py-1 px-3 rounded text-sm" onClick={fetchTables}>
             Thử lại
           </button>
         </div>
       )}
 
-      <button className="bg-blue-600 text-white py-2 px-4 rounded mb-4" onClick={() => setIsModalOpen(true)}>
+      <button
+        className="w-full md:w-auto bg-blue-600 text-white py-2 px-4 rounded mb-4"
+        onClick={() => setIsModalOpen(true)}
+      >
         Thêm bàn
       </button>
-      <div className="mb-4 flex items-center gap-4">
+
+      <div className="mb-4 flex flex-wrap items-center gap-2 md:gap-4 text-sm">
         <div className="flex items-center">
           <div className="w-4 h-4 bg-gray-400 mr-2"></div>
           <span>Bàn trống</span>
@@ -274,7 +314,7 @@ const TablesManagement = ({ onTableSelect }) => {
       {tables.length === 0 ? (
         <div className="text-center py-8 text-gray-500">Chưa có bàn nào. Hãy thêm bàn mới.</div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6">
           {tables.map((table, index) => (
             <div
               key={table.id || index}
@@ -285,20 +325,21 @@ const TablesManagement = ({ onTableSelect }) => {
               }}
             >
               <div
-                className={`w-full h-32 flex flex-col items-center justify-center text-white font-bold ${getStatusColor(table.status)}`}
+                className={`w-full h-24 md:h-32 flex flex-col items-center justify-center text-white font-bold ${getStatusColor(table.status)}`}
               >
-                <div className="mb-2">
+                <div className="mb-1 md:mb-2">
                   {table.status === "EMPTY" && (
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      width="32"
-                      height="32"
+                      width="24"
+                      height="24"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
                       strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
+                      className="md:w-8 md:h-8"
                     >
                       <rect x="4" y="8" width="16" height="9" rx="1" />
                       <path d="M8 8v-2a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
@@ -307,14 +348,15 @@ const TablesManagement = ({ onTableSelect }) => {
                   {table.status === "BOOKED" && (
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      width="32"
-                      height="32"
+                      width="24"
+                      height="24"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
                       strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
+                      className="md:w-8 md:h-8"
                     >
                       <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
                       <circle cx="9" cy="7" r="4" />
@@ -325,21 +367,22 @@ const TablesManagement = ({ onTableSelect }) => {
                   {table.status === "ORDERING" && (
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      width="32"
-                      height="32"
+                      width="24"
+                      height="24"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
                       strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
+                      className="md:w-8 md:h-8"
                     >
                       <path d="M17 8h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-2v4a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-4H8v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-4H3a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h2V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2h-4z" />
                     </svg>
                   )}
                 </div>
-                <div className="text-lg font-bold">{table.name || `Bàn ${table.id || index + 1}`}</div>
-                <div className="mt-2 text-sm">Nhấn để xem đơn hàng</div>
+                <div className="text-base md:text-lg font-bold">{table.name || `Bàn ${table.id || index + 1}`}</div>
+                <div className="mt-1 md:mt-2 text-xs md:text-sm">Nhấn để xem đơn hàng</div>
               </div>
             </div>
           ))}
@@ -347,9 +390,9 @@ const TablesManagement = ({ onTableSelect }) => {
       )}
 
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow-md w-full max-w-md">
-            <h3 className="text-xl font-bold mb-4">Thêm bàn mới</h3>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white p-4 md:p-6 rounded shadow-md w-full max-w-md">
+            <h3 className="text-lg md:text-xl font-bold mb-4">Thêm bàn mới</h3>
             <input
               type="text"
               className="border p-2 w-full mb-4"
@@ -377,7 +420,7 @@ const TablesManagement = ({ onTableSelect }) => {
 
 const DishesManagement = () => (
   <div>
-    <h2 className="text-2xl font-bold mb-4">Quản lý món ăn</h2>
+    <h2 className="text-xl md:text-2xl font-bold mb-4">Quản lý món ăn</h2>
     {/* Add dish management functionality here */}
     <p>Chức năng quản lý món ăn sẽ được thêm vào đây.</p>
   </div>
@@ -388,6 +431,12 @@ const OrdersManagement = ({ selectedTable }) => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [debugInfo, setDebugInfo] = useState(null)
+  const [expandedOrderId, setExpandedOrderId] = useState(null)
+
+  // Toggle order details expansion for mobile view
+  const toggleOrderExpansion = (orderId) => {
+    setExpandedOrderId(expandedOrderId === orderId ? null : orderId)
+  }
 
   // Hàm để tạo dữ liệu mẫu cho việc kiểm tra giao diện
   const createMockData = () => {
@@ -540,74 +589,315 @@ const OrdersManagement = ({ selectedTable }) => {
 
     setLoading(true)
     try {
-      console.log("Updating order detail status:", { orderDetailId, newStatus })
+      console.log("Updating order detail status:", { orderDetailId, status: newStatus })
 
-      // Tạo URL API
+      // Tạo URL API - Đúng theo API Controller
       const apiUrl = `${BASE_URL}/order/orderDetail/changeStatus`
       console.log("API URL for update:", apiUrl)
+
+      // Ghi log body request để debug
+      const requestBody = {
+        id: orderDetailId,
+        status: newStatus,
+      }
+      console.log("Request body:", JSON.stringify(requestBody))
 
       const response = await fetch(apiUrl, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          orderDetailId: orderDetailId,
-          status: newStatus,
-        }),
+        body: JSON.stringify(requestBody),
       })
 
       const responseText = await response.text()
       console.log("Update response:", responseText)
 
-      let data
-      try {
-        data = JSON.parse(responseText)
-      } catch (e) {
-        console.error("Error parsing response:", e)
-        setError(`Lỗi phân tích phản hồi: ${e.message}`)
+      // Show appropriate notification based on status
+      let notificationMessage = ""
+      let notificationColor = "bg-green-500"
+
+      if (newStatus === "CANCELLED") {
+        notificationMessage = "Hủy thành công"
+        notificationColor = "bg-red-500"
+      } else if (newStatus === "DELIVERED") {
+        notificationMessage = "Xác nhận đã giao thành công"
+      }
+
+      // Create and show notification
+      const notification = document.createElement("div")
+      notification.className = `fixed top-4 right-4 ${notificationColor} text-white p-3 rounded shadow-lg z-50 max-w-xs md:max-w-md`
+      notification.innerHTML = `
+        <div class="flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${newStatus === "CANCELLED" ? "M6 18L18 6M6 6l12 12" : "M5 13l4 4L19 7"}" />
+          </svg>
+          <span class="text-sm md:text-base">${notificationMessage}</span>
+        </div>
+      `
+      document.body.appendChild(notification)
+
+      // Remove notification after 3 seconds
+      setTimeout(() => {
+        notification.classList.add("opacity-0", "transition-opacity", "duration-500")
+        setTimeout(() => {
+          document.body.removeChild(notification)
+        }, 500)
+      }, 3000)
+
+      // Update state and continue with existing logic
+      const updatedOrders = orders.map((order) => {
+        if (order.id === orderId) {
+          return {
+            ...order,
+            orderDetail: order.orderDetail.map((detail) => {
+              if (detail.id === orderDetailId) {
+                return { ...detail, status: newStatus }
+              }
+              return detail
+            }),
+          }
+        }
+        return order
+      })
+
+      setOrders(updatedOrders)
+
+      // Refresh data from API
+      setTimeout(() => {
+        const apiUrl = `${BASE_URL}/order/diningTable/${selectedTable.id}`
+        fetch(apiUrl)
+          .then((response) => response.json())
+          .then((data) => {
+            if (data && Array.isArray(data.data)) {
+              setOrders(data.data)
+            } else if (data && typeof data === "object" && !data.status) {
+              // Trường hợp API trả về đối tượng đơn lẻ
+              setOrders([data])
+            }
+          })
+          .catch((err) => {
+            console.error("Error refreshing after update:", err)
+          })
+      }, 1000)
+    } catch (error) {
+      console.error("Error updating order detail:", error)
+      setError(`Lỗi kết nối: ${error.message}`)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleUpdateOrderStatus = async (orderId, newStatus) => {
+    // Kiểm tra ID hợp lệ
+    if (!orderId) {
+      console.error("orderId is null or undefined:", orderId)
+      setError("ID đơn hàng không hợp lệ")
+      return
+    }
+
+    setLoading(true)
+    try {
+      console.log("Updating order status:", { orderId, status: newStatus })
+
+      // Tạo URL API - Đúng theo API Controller
+      const apiUrl = `${BASE_URL}/order/changeStatus`
+      console.log("API URL for update:", apiUrl)
+
+      // Ghi log body request để debug
+      const requestBody = {
+        id: orderId,
+        status: newStatus,
+      }
+      console.log("Request body:", JSON.stringify(requestBody))
+
+      const response = await fetch(apiUrl, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      })
+
+      const responseText = await response.text()
+      console.log("Update order response:", responseText)
+
+      // Create notification message based on status
+      let notificationMessage = "Cập nhật trạng thái thành công"
+      if (newStatus === "DELIVERED") {
+        notificationMessage = "Cập nhật trạng thái thành công"
+      }
+
+      // Show notification
+      const notification = document.createElement("div")
+      notification.className =
+        "fixed top-4 right-4 bg-green-500 text-white p-3 rounded shadow-lg z-50 max-w-xs md:max-w-md"
+      notification.innerHTML = `
+        <div class="flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+          <span class="text-sm md:text-base">${notificationMessage}</span>
+        </div>
+    `
+      document.body.appendChild(notification)
+
+      // Remove the notification after 3 seconds with fade effect
+      setTimeout(() => {
+        notification.classList.add("opacity-0", "transition-opacity", "duration-500")
+        setTimeout(() => {
+          document.body.removeChild(notification)
+        }, 500)
+      }, 3000)
+
+      // Update local state
+      const updatedOrders = orders.map((o) => {
+        if (o.id === orderId) {
+          return { ...o, status: newStatus }
+        }
+        return o
+      })
+      setOrders(updatedOrders)
+
+      // Refresh data from API
+      setTimeout(() => {
+        const apiUrl = `${BASE_URL}/order/diningTable/${selectedTable.id}`
+        fetch(apiUrl)
+          .then((response) => response.json())
+          .then((data) => {
+            if (data && data.status === 200 && Array.isArray(data.data)) {
+              setOrders(data.data)
+            } else if (data && typeof data === "object" && !data.status) {
+              setOrders([data])
+            }
+          })
+          .catch((err) => {
+            console.error("Error refreshing after update:", err)
+          })
+      }, 1000)
+    } catch (error) {
+      console.error("Error updating order status:", error)
+      setError(`Lỗi kết nối: ${error.message}`)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const updateAllDetails = async (order) => {
+    setLoading(true)
+    try {
+      // Lọc ra các chi tiết có ID hợp lệ
+      const validDetails = order.orderDetail.filter((detail) => detail.id)
+
+      if (validDetails.length === 0) {
+        setError("Không có chi tiết đơn hàng nào có ID hợp lệ")
         setLoading(false)
         return
       }
 
-      if (data && (data.status === 0 || data.status === 200)) {
-        // Cập nhật trạng thái thành công trong state
-        const updatedOrders = orders.map((order) => {
-          if (order.id === orderId) {
-            return {
-              ...order,
-              orderDetail: order.orderDetail.map((detail) => {
-                if (detail.id === orderDetailId) {
-                  return { ...detail, status: newStatus }
-                }
-                return detail
-              }),
+      console.log(
+        "Updating all order details:",
+        validDetails.map((d) => d.id),
+      )
+
+      // Create an array of promises for all update requests
+      const updatePromises = validDetails.map((detail) => {
+        const requestBody = {
+          id: detail.id,
+          status: "DELIVERED",
+        }
+        console.log("Request body for detail", detail.id, ":", JSON.stringify(requestBody))
+
+        return fetch(`${BASE_URL}/order/orderDetail/changeStatus`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        }).then((res) =>
+          res.text().then((text) => {
+            console.log(`Response for detail ${detail.id}:`, text)
+            try {
+              return JSON.parse(text)
+            } catch (e) {
+              console.error(`Error parsing response for detail ${detail.id}:`, e)
+              return { status: -1, message: e.message }
             }
+          }),
+        )
+      })
+
+      // Show notification for bulk action
+      const notification = document.createElement("div")
+      notification.className =
+        "fixed top-4 right-4 bg-green-500 text-white p-3 rounded shadow-lg z-50 max-w-xs md:max-w-md"
+      notification.innerHTML = `
+        <div class="flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+          <span class="text-sm md:text-base">Xác nhận giao toàn bộ thành công</span>
+        </div>
+    `
+      document.body.appendChild(notification)
+
+      // Remove the notification after 3 seconds
+      setTimeout(() => {
+        notification.classList.add("opacity-0", "transition-opacity", "duration-500")
+        setTimeout(() => {
+          document.body.removeChild(notification)
+        }, 500)
+      }, 3000)
+
+      // Update local state
+      const updatedOrders = orders.map((o) => {
+        if (o.id === order.id) {
+          return {
+            ...o,
+            orderDetail: o.orderDetail.map((detail) => ({
+              ...detail,
+              status: "DELIVERED",
+            })),
           }
-          return order
+        }
+        return o
+      })
+      setOrders(updatedOrders)
+
+      // Wait for all updates to complete
+      Promise.all(updatePromises)
+        .then((results) => {
+          console.log("All update results:", results)
+
+          // Check if any updates failed
+          const failures = results.filter((r) => r && r.status !== 0 && r.status !== 200)
+          if (failures.length > 0) {
+            console.error("Some updates failed:", failures)
+          }
+        })
+        .catch((error) => {
+          console.error("Error in batch update:", error)
         })
 
-        setOrders(updatedOrders)
-
-        // Refresh data from API to ensure we have the latest state
-        setTimeout(() => {
-          const apiUrl = `${BASE_URL}/order/diningTable/${selectedTable.id}`
-          fetch(apiUrl)
-            .then((response) => response.json())
-            .then((data) => {
-              if (data && data.status === 200 && Array.isArray(data.data)) {
-                setOrders(data.data)
-              }
-            })
-            .catch((err) => {
-              console.error("Error refreshing after update:", err)
-            })
-        }, 1000)
-      } else {
-        setError(data.message || "Không thể cập nhật trạng thái")
-      }
+      // Refresh data from API
+      setTimeout(() => {
+        const apiUrl = `${BASE_URL}/order/diningTable/${selectedTable.id}`
+        fetch(apiUrl)
+          .then((response) => response.json())
+          .then((data) => {
+            if (data && Array.isArray(data.data)) {
+              setOrders(data.data)
+            } else if (data && typeof data === "object" && !data.status) {
+              // Trường hợp API trả về đối tượng đơn lẻ
+              setOrders([data])
+            }
+          })
+          .catch((err) => {
+            console.error("Error refreshing after update:", err)
+          })
+      }, 1000)
     } catch (error) {
-      console.error("Error updating order detail:", error)
+      console.error("Error updating all details:", error)
       setError(`Lỗi kết nối: ${error.message}`)
     } finally {
       setLoading(false)
@@ -617,7 +907,7 @@ const OrdersManagement = ({ selectedTable }) => {
   if (!selectedTable) {
     return (
       <div className="text-center py-8">
-        <h2 className="text-2xl font-bold mb-4">Đặt món</h2>
+        <h2 className="text-xl md:text-2xl font-bold mb-4">Đặt món</h2>
         <p className="text-gray-500">Vui lòng chọn một bàn để xem đơn hàng.</p>
       </div>
     )
@@ -626,17 +916,19 @@ const OrdersManagement = ({ selectedTable }) => {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-4"></div>
-        <div className="text-xl">Đang tải dữ liệu đơn hàng...</div>
-        <div className="text-sm text-gray-500 mt-2">Đang kết nối đến bàn {selectedTable.id}</div>
+        <div className="animate-spin rounded-full h-10 w-10 md:h-12 md:w-12 border-b-2 border-blue-500 mb-4"></div>
+        <div className="text-lg md:text-xl">Đang tải dữ liệu đơn hàng...</div>
+        <div className="text-xs md:text-sm text-gray-500 mt-2">Đang kết nối đến bàn {selectedTable.id}</div>
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center h-64">
-        <h2 className="text-2xl font-bold mb-4">Đơn hàng - {selectedTable.name || `Bàn ${selectedTable.id}`}</h2>
+      <div className="flex flex-col items-center justify-center h-64 px-4">
+        <h2 className="text-xl md:text-2xl font-bold mb-4">
+          Đơn hàng - {selectedTable.name || `Bàn ${selectedTable.id}`}
+        </h2>
         <div className="text-red-600 font-medium mb-4 text-center max-w-lg">
           <p>{error}</p>
           <p className="text-sm mt-2">Bàn ID: {selectedTable.id || "Không có ID"}</p>
@@ -644,11 +936,11 @@ const OrdersManagement = ({ selectedTable }) => {
             <div className="mt-4 p-2 bg-gray-100 rounded text-left text-xs overflow-auto max-h-40">
               <p>API URL: {debugInfo.url}</p>
               <p className="mt-1">Phản hồi thô:</p>
-              <pre className="mt-1 whitespace-pre-wrap">{debugInfo.rawResponse}</pre>
+              <pre className="mt-1 whitespace-pre-wrap text-xs">{debugInfo.rawResponse}</pre>
             </div>
           )}
         </div>
-        <div className="flex space-x-2">
+        <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
           <button
             className="bg-blue-600 text-white py-2 px-4 rounded"
             onClick={() => {
@@ -712,8 +1004,10 @@ const OrdersManagement = ({ selectedTable }) => {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">Đơn hàng - {selectedTable.name || `Bàn ${selectedTable.id}`}</h2>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 md:mb-6">
+        <h2 className="text-xl md:text-2xl font-bold mb-2 md:mb-0">
+          Đơn hàng - {selectedTable.name || `Bàn ${selectedTable.id}`}
+        </h2>
         <div className="flex items-center gap-2">
           <button
             onClick={() => {
@@ -763,9 +1057,9 @@ const OrdersManagement = ({ selectedTable }) => {
                 d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
               />
             </svg>
-            Làm mới
+            <span className="hidden sm:inline">Làm mới</span>
           </button>
-          <div className={`px-3 py-1 rounded text-white ${getStatusBadgeColor(selectedTable.status)}`}>
+          <div className={`px-3 py-1 rounded text-white text-sm ${getStatusBadgeColor(selectedTable.status)}`}>
             {getStatusText(selectedTable.status)}
           </div>
         </div>
@@ -784,378 +1078,198 @@ const OrdersManagement = ({ selectedTable }) => {
           </button>
         </div>
       ) : (
-        <div>
+        <div className="space-y-4">
           {orders.map((order, index) => (
-            <div key={order.id || index} className="mb-6 border rounded-lg overflow-hidden">
-              <div className="bg-gray-100 p-4 flex justify-between items-center">
+            <div key={order.id || index} className="border rounded-lg overflow-hidden shadow-sm">
+              {/* Order Header - Always visible */}
+              <div
+                className="bg-gray-100 p-3 md:p-4 flex justify-between items-center cursor-pointer"
+                onClick={() => toggleOrderExpansion(order.id)}
+              >
                 <div>
-                  <h3 className="font-bold">Đơn hàng #{order.id || index + 1}</h3>
-                  <p className="text-sm text-gray-600">
+                  <h3 className="font-bold text-base md:text-lg">Đơn hàng #{order.id || index + 1}</h3>
+                  <p className="text-xs md:text-sm text-gray-600">
                     {order.createdAt ? new Date(order.createdAt).toLocaleString() : "Không có thời gian"}
                   </p>
                 </div>
-                <div className={`px-3 py-1 rounded text-white ${getOrderStatusBadgeColor(order.status)}`}>
-                  {getOrderStatusText(order.status)}
+                <div className="flex items-center gap-2">
+                  <div className={`px-2 py-1 rounded text-white text-xs ${getOrderStatusBadgeColor(order.status)}`}>
+                    {getOrderStatusText(order.status)}
+                  </div>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className={`h-5 w-5 transition-transform duration-200 ${expandedOrderId === order.id ? "rotate-180" : ""}`}
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
                 </div>
               </div>
 
-              <div className="p-4">
-                <h4 className="font-semibold mb-2">Chi tiết đơn hàng:</h4>
-                {order.orderDetail && order.orderDetail.length > 0 ? (
-                  <div>
-                    <div className="bg-gray-800 text-white rounded-lg p-4 mb-4">
-                      {order.orderDetail.map((detail, idx) => (
-                        <div
-                          key={idx}
-                          className="flex items-center justify-between py-2 border-b border-gray-700 last:border-0"
-                        >
-                          <div className="flex items-center">
-                            <span className="font-medium">{detail.food?.name || `Món ${idx + 1}`}</span>
-                            <span className="ml-2 text-gray-300">x{detail.quantity || 0}</span>
-                          </div>
-                          <div className="flex items-center">
-                            <span className="mr-4">{formatCurrency(detail.food?.price || 0)}</span>
-                            <button
-                              className="bg-gray-700 hover:bg-gray-600 text-white py-1 px-3 rounded mr-2"
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                if (!detail.id) {
-                                  console.error("orderDetailId is null or undefined")
-                                  setError("ID chi tiết đơn hàng không hợp lệ")
-                                  return
-                                }
-                                handleUpdateOrderDetailStatus(order.id, detail.id, "CANCELLED")
-                              }}
-                            >
-                              Hủy
-                            </button>
-                            <button
-                              className="bg-gray-100 hover:bg-white text-gray-800 py-1 px-3 rounded"
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                if (!detail.id) {
-                                  console.error("orderDetailId is null or undefined")
-                                  setError("ID chi tiết đơn hàng không hợp lệ")
-                                  return
-                                }
-                                handleUpdateOrderDetailStatus(order.id, detail.id, "DELIVERED")
-                              }}
-                            >
-                              Xác nhận đã giao
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                      <div className="flex justify-end mt-4 pt-2 border-t border-gray-700">
-                        <button
-                          className="bg-gray-100 hover:bg-white text-gray-800 py-2 px-4 rounded"
-                          onClick={() => {
-                            // Cập nhật tất cả các chi tiết đơn hàng thành DELIVERED
-                            const updateAllDetails = async () => {
-                              setLoading(true)
-                              try {
-                                // Lọc ra các chi tiết có ID hợp lệ
-                                const validDetails = order.orderDetail.filter((detail) => detail.id)
-
-                                if (validDetails.length === 0) {
-                                  setError("Không có chi tiết đơn hàng nào có ID hợp lệ")
-                                  setLoading(false)
-                                  return
-                                }
-
-                                console.log(
-                                  "Updating all order details:",
-                                  validDetails.map((d) => d.id),
-                                )
-
-                                // Create an array of promises for all update requests
-                                const updatePromises = validDetails.map((detail) =>
-                                  fetch(`${BASE_URL}/order/orderDetail/changeStatus`, {
-                                    method: "PATCH",
-                                    headers: {
-                                      "Content-Type": "application/json",
-                                    },
-                                    body: JSON.stringify({
-                                      orderDetailId: detail.id,
-                                      status: "DELIVERED",
-                                    }),
-                                  }).then((res) =>
-                                    res.text().then((text) => {
-                                      console.log(`Response for detail ${detail.id}:`, text)
-                                      try {
-                                        return JSON.parse(text)
-                                      } catch (e) {
-                                        console.error(`Error parsing response for detail ${detail.id}:`, e)
-                                        return { status: -1, message: e.message }
-                                      }
-                                    }),
-                                  ),
-                                )
-
-                                // Wait for all updates to complete
-                                const results = await Promise.all(updatePromises)
-                                console.log("All update results:", results)
-
-                                // Check if any updates failed
-                                const failures = results.filter((r) => r.status !== 0 && r.status !== 200)
-                                if (failures.length > 0) {
-                                  console.error("Some updates failed:", failures)
-                                  setError(`${failures.length} cập nhật thất bại. Vui lòng thử lại.`)
-                                  setLoading(false)
-                                  return
-                                }
-
-                                // Update local state
-                                const updatedOrders = orders.map((o) => {
-                                  if (o.id === order.id) {
-                                    return {
-                                      ...o,
-                                      orderDetail: o.orderDetail.map((detail) => ({
-                                        ...detail,
-                                        status: "DELIVERED",
-                                      })),
+              {/* Order Details - Expandable on mobile */}
+              <div className={`${expandedOrderId === order.id || "hidden md:block"}`}>
+                <div className="p-3 md:p-4">
+                  <h4 className="font-semibold mb-2 text-sm md:text-base">Chi tiết đơn hàng:</h4>
+                  {order.orderDetail && order.orderDetail.length > 0 ? (
+                    <div>
+                      {/* Mobile-friendly order details card */}
+                      <div className="bg-gray-800 text-white rounded-lg p-3 md:p-4 mb-4">
+                        {order.orderDetail.map((detail, idx) => (
+                          <div
+                            key={idx}
+                            className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-2 border-b border-gray-700 last:border-0"
+                          >
+                            <div className="flex items-center mb-2 sm:mb-0">
+                              <span className="font-medium text-sm md:text-base">
+                                {detail.food?.name || `Món ${idx + 1}`}
+                              </span>
+                              <span className="ml-2 text-gray-300 text-xs md:text-sm">x{detail.quantity || 0}</span>
+                            </div>
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="text-sm md:text-base mr-2">
+                                {formatCurrency(detail.food?.price || 0)}
+                              </span>
+                              <div className="flex gap-2">
+                                <button
+                                  className="bg-gray-700 hover:bg-gray-600 text-white py-1 px-2 md:px-3 rounded text-xs md:text-sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    if (!detail.id) {
+                                      console.error("orderDetailId is null or undefined")
+                                      setError("ID chi tiết đơn hàng không hợp lệ")
+                                      return
                                     }
-                                  }
-                                  return o
-                                })
-                                setOrders(updatedOrders)
+                                    handleUpdateOrderDetailStatus(order.id, detail.id, "CANCELLED")
+                                  }}
+                                >
+                                  Hủy
+                                </button>
+                                <button
+                                  className="bg-gray-100 hover:bg-white text-gray-800 py-1 px-2 md:px-3 rounded text-xs md:text-sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    if (!detail.id) {
+                                      console.error("orderDetailId is null or undefined")
+                                      setError("ID chi tiết đơn hàng không hợp lệ")
+                                      return
+                                    }
+                                    handleUpdateOrderDetailStatus(order.id, detail.id, "DELIVERED")
+                                  }}
+                                >
+                                  Xác nhận đã giao
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                        <div className="flex justify-end mt-4 pt-2 border-t border-gray-700">
+                          <button
+                            className="bg-gray-100 hover:bg-white text-gray-800 py-1 px-3 md:py-2 md:px-4 rounded text-xs md:text-sm"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              updateAllDetails(order)
+                            }}
+                          >
+                            Xác nhận giao toàn bộ
+                          </button>
+                        </div>
+                      </div>
 
-                                // Refresh data from API
-                                setTimeout(() => {
-                                  const apiUrl = `${BASE_URL}/order/diningTable/${selectedTable.id}`
-                                  fetch(apiUrl)
-                                    .then((response) => response.json())
-                                    .then((data) => {
-                                      if (data && data.status === 200 && Array.isArray(data.data)) {
-                                        setOrders(data.data)
-                                      }
-                                    })
-                                    .catch((err) => {
-                                      console.error("Error refreshing after update:", err)
-                                    })
-                                }, 1000)
-                              } catch (error) {
-                                console.error("Error updating all details:", error)
-                                setError(`Lỗi kết nối: ${error.message}`)
-                              } finally {
-                                setLoading(false)
-                              }
-                            }
+                      {/* Responsive table - Hidden on small screens */}
+                      <div className="hidden md:block overflow-x-auto">
+                        <table className="w-full border-collapse">
+                          <thead>
+                            <tr className="bg-gray-50">
+                              <th className="border p-2 text-left">Món</th>
+                              <th className="border p-2 text-center">Số lượng</th>
+                              <th className="border p-2 text-right">Đơn giá</th>
+                              <th className="border p-2 text-right">Thành tiền</th>
+                              <th className="border p-2 text-center">Trạng thái</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {order.orderDetail.map((detail, idx) => (
+                              <tr key={idx} className="hover:bg-gray-50">
+                                <td className="border p-2">{detail.food?.name || `Món ${idx + 1}`}</td>
+                                <td className="border p-2 text-center">{detail.quantity || 0}</td>
+                                <td className="border p-2 text-right">{formatCurrency(detail.food?.price || 0)}</td>
+                                <td className="border p-2 text-right">
+                                  {formatCurrency((detail.food?.price || 0) * (detail.quantity || 0))}
+                                </td>
+                                <td className="border p-2 text-center">
+                                  <span
+                                    className={`px-2 py-1 rounded text-xs text-white ${getOrderDetailStatusColor(detail.status || "PENDING")}`}
+                                  >
+                                    {getOrderDetailStatusText(detail.status || "PENDING")}
+                                  </span>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                          <tfoot>
+                            <tr className="bg-gray-100 font-bold">
+                              <td colSpan="3" className="border p-2 text-right">
+                                Tổng cộng:
+                              </td>
+                              <td className="border p-2 text-right">
+                                {formatCurrency(order.totalPrice || calculateOrderTotal(order))}
+                              </td>
+                              <td className="border p-2"></td>
+                            </tr>
+                          </tfoot>
+                        </table>
+                      </div>
 
-                            updateAllDetails()
-                          }}
-                        >
-                          Xác nhận giao toàn bộ
-                        </button>
+                      {/* Mobile list view - Visible only on small screens */}
+                      <div className="md:hidden mt-4">
+                        <div className="bg-gray-50 p-3 rounded-lg">
+                          <div className="flex justify-between font-bold mb-2 text-sm">
+                            <span>Tổng cộng:</span>
+                            <span>{formatCurrency(order.totalPrice || calculateOrderTotal(order))}</span>
+                          </div>
+                          {order.orderDetail.map((detail, idx) => (
+                            <div key={idx} className="border-t pt-2 mt-2">
+                              <div className="flex justify-between mb-1">
+                                <span className="font-medium text-sm">{detail.food?.name || `Món ${idx + 1}`}</span>
+                                <span className="text-sm">
+                                  {formatCurrency(detail.food?.price || 0)} x {detail.quantity || 0}
+                                </span>
+                              </div>
+                              <div className="flex justify-between items-center">
+                                <span
+                                  className={`px-2 py-0.5 rounded text-xs text-white ${getOrderDetailStatusColor(detail.status || "PENDING")}`}
+                                >
+                                  {getOrderDetailStatusText(detail.status || "PENDING")}
+                                </span>
+                                <span className="font-medium text-sm">
+                                  {formatCurrency((detail.food?.price || 0) * (detail.quantity || 0))}
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </div>
+                  ) : (
+                    <div className="bg-gray-100 p-4 rounded-lg text-center">
+                      <p className="text-gray-500 text-sm">Không có chi tiết đơn hàng.</p>
+                    </div>
+                  )}
+                </div>
 
-                    <table className="w-full border-collapse">
-                      <thead>
-                        <tr className="bg-gray-50">
-                          <th className="border p-2 text-left">Món</th>
-                          <th className="border p-2 text-center">Số lượng</th>
-                          <th className="border p-2 text-right">Đơn giá</th>
-                          <th className="border p-2 text-right">Thành tiền</th>
-                          <th className="border p-2 text-center">Trạng thái</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {order.orderDetail.map((detail, idx) => (
-                          <tr key={idx} className="hover:bg-gray-50">
-                            <td className="border p-2">{detail.food?.name || `Món ${idx + 1}`}</td>
-                            <td className="border p-2 text-center">{detail.quantity || 0}</td>
-                            <td className="border p-2 text-right">{formatCurrency(detail.food?.price || 0)}</td>
-                            <td className="border p-2 text-right">
-                              {formatCurrency((detail.food?.price || 0) * (detail.quantity || 0))}
-                            </td>
-                            <td className="border p-2 text-center">
-                              <span
-                                className={`px-2 py-1 rounded text-xs text-white ${getOrderDetailStatusColor(detail.status || "PENDING")}`}
-                              >
-                                {getOrderDetailStatusText(detail.status || "PENDING")}
-                              </span>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                      <tfoot>
-                        <tr className="bg-gray-100 font-bold">
-                          <td colSpan="3" className="border p-2 text-right">
-                            Tổng cộng:
-                          </td>
-                          <td className="border p-2 text-right">
-                            {formatCurrency(order.totalPrice || calculateOrderTotal(order))}
-                          </td>
-                          <td className="border p-2"></td>
-                        </tr>
-                      </tfoot>
-                    </table>
-                  </div>
-                ) : (
-                  <div className="bg-gray-100 p-4 rounded-lg text-center">
-                    <p className="text-gray-500">Không có chi tiết đơn hàng.</p>
-                  </div>
-                )}
-              </div>
-
-              <div className="bg-gray-50 p-4 flex justify-end space-x-2">
-                <button
-                  className="bg-yellow-500 text-white py-1 px-3 rounded"
-                  onClick={() => {
-                    const updateOrderStatus = async () => {
-                      if (!order.id) {
-                        console.error("orderId is null or undefined:", order.id)
-                        setError("ID đơn hàng không hợp lệ")
-                        return
-                      }
-
-                      setLoading(true)
-                      try {
-                        console.log("Updating order status:", { orderId: order.id, status: "PENDING" })
-
-                        const response = await fetch(`${BASE_URL}/order/changeStatus`, {
-                          method: "PATCH",
-                          headers: {
-                            "Content-Type": "application/json",
-                          },
-                          body: JSON.stringify({
-                            orderId: order.id,
-                            status: "PENDING",
-                          }),
-                        })
-
-                        const responseText = await response.text()
-                        console.log("Update order response:", responseText)
-
-                        let data
-                        try {
-                          data = JSON.parse(responseText)
-                        } catch (e) {
-                          console.error("Error parsing response:", e)
-                          setError(`Lỗi phân tích phản hồi: ${e.message}`)
-                          setLoading(false)
-                          return
-                        }
-
-                        if (data && (data.status === 0 || data.status === 200)) {
-                          // Update local state
-                          const updatedOrders = orders.map((o) => {
-                            if (o.id === order.id) {
-                              return { ...o, status: "PENDING" }
-                            }
-                            return o
-                          })
-                          setOrders(updatedOrders)
-
-                          // Refresh data from API
-                          setTimeout(() => {
-                            const apiUrl = `${BASE_URL}/order/diningTable/${selectedTable.id}`
-                            fetch(apiUrl)
-                              .then((response) => response.json())
-                              .then((data) => {
-                                if (data && data.status === 200 && Array.isArray(data.data)) {
-                                  setOrders(data.data)
-                                }
-                              })
-                              .catch((err) => {
-                                console.error("Error refreshing after update:", err)
-                              })
-                          }, 1000)
-                        } else {
-                          setError(data.message || "Không thể cập nhật trạng thái đơn hàng")
-                        }
-                      } catch (error) {
-                        console.error("Error updating order status:", error)
-                        setError(`Lỗi kết nối: ${error.message}`)
-                      } finally {
-                        setLoading(false)
-                      }
-                    }
-
-                    updateOrderStatus()
-                  }}
-                >
-                  Cập nhật
-                </button>
-                <button
-                  className="bg-green-500 text-white py-1 px-3 rounded"
-                  onClick={() => {
-                    const updateOrderStatus = async () => {
-                      if (!order.id) {
-                        console.error("orderId is null or undefined:", order.id)
-                        setError("ID đơn hàng không hợp lệ")
-                        return
-                      }
-
-                      setLoading(true)
-                      try {
-                        console.log("Updating order status:", { orderId: order.id, status: "DELIVERED" })
-
-                        const response = await fetch(`${BASE_URL}/order/changeStatus`, {
-                          method: "PATCH",
-                          headers: {
-                            "Content-Type": "application/json",
-                          },
-                          body: JSON.stringify({
-                            orderId: order.id,
-                            status: "DELIVERED",
-                          }),
-                        })
-
-                        const responseText = await response.text()
-                        console.log("Update order response:", responseText)
-
-                        let data
-                        try {
-                          data = JSON.parse(responseText)
-                        } catch (e) {
-                          console.error("Error parsing response:", e)
-                          setError(`Lỗi phân tích phản hồi: ${e.message}`)
-                          setLoading(false)
-                          return
-                        }
-
-                        if (data && (data.status === 0 || data.status === 200)) {
-                          // Update local state
-                          const updatedOrders = orders.map((o) => {
-                            if (o.id === order.id) {
-                              return { ...o, status: "DELIVERED" }
-                            }
-                            return o
-                          })
-                          setOrders(updatedOrders)
-
-                          // Refresh data from API
-                          setTimeout(() => {
-                            const apiUrl = `${BASE_URL}/order/diningTable/${selectedTable.id}`
-                            fetch(apiUrl)
-                              .then((response) => response.json())
-                              .then((data) => {
-                                if (data && data.status === 200 && Array.isArray(data.data)) {
-                                  setOrders(data.data)
-                                }
-                              })
-                              .catch((err) => {
-                                console.error("Error refreshing after update:", err)
-                              })
-                          }, 1000)
-                        } else {
-                          setError(data.message || "Không thể cập nhật trạng thái đơn hàng")
-                        }
-                      } catch (error) {
-                        console.error("Error updating order status:", error)
-                        setError(`Lỗi kết nối: ${error.message}`)
-                      } finally {
-                        setLoading(false)
-                      }
-                    }
-
-                    updateOrderStatus()
-                  }}
-                >
-                  Thanh toán
-                </button>
+                <div className="bg-gray-50 p-3 md:p-4 flex justify-end">
+                  <button
+                    className="bg-green-500 text-white py-1 px-3 rounded text-sm md:text-base"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleUpdateOrderStatus(order.id, "DELIVERED")
+                    }}
+                  >
+                    Cập nhật
+                  </button>
+                </div>
               </div>
             </div>
           ))}
