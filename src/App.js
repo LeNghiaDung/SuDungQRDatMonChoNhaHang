@@ -9,6 +9,7 @@ import PaymentSuccessPage from "./pages/PaymentSuccessPage";
 import LoginPage from "./pages/LoginPage";
 import "./App.css";
 import { use, useEffect } from "react";
+import Chatbot from "./components/Chatbot";
 
 function App() {
   const [customerId, setCustomerId] = useState("");
@@ -32,13 +33,16 @@ function App() {
         {!customerId ? (
           <LoginPage onLogin={handleLogin} />
         ) : (
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/product/:id" element={<ProductDetailPage />} />
-            <Route path="/cart" element={<CartPage />} />
-            <Route path="/checkout" element={<CheckoutPage />} />
-            <Route path="/payment-success" element={<PaymentSuccessPage />} />
-          </Routes>
+          <>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/product/:id" element={<ProductDetailPage />} />
+              <Route path="/cart" element={<CartPage />} />
+              <Route path="/checkout" element={<CheckoutPage />} />
+              <Route path="/payment-success" element={<PaymentSuccessPage />} />
+            </Routes>
+            <Chatbot />
+          </>
         )}
       </div>
     </CartProvider>

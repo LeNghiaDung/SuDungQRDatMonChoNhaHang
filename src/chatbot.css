@@ -1,0 +1,322 @@
+/* Chatbot Container */
+.chatbot-container {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  z-index: 1000;
+}
+
+/* Toggle Button */
+.chatbot-toggle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #f97316;
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+
+.chatbot-toggle:hover {
+  background-color: #f97316;
+  transform: scale(1.05);
+}
+
+/* Chatbot Window */
+.chatbot-window {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 380px;
+  height: 700px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideIn 0.3s ease forwards;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Chatbot Header */
+.chatbot-header {
+  background-color: #f97316;
+  color: white;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chatbot-header h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+/* Chatbot Messages */
+.chatbot-messages {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.message {
+  max-width: 80%;
+  padding: 10px 15px;
+  border-radius: 18px;
+  margin-bottom: 5px;
+  word-wrap: break-word;
+  line-height: 1.5;
+  white-space: pre-line; /* This helps preserve line breaks */
+}
+
+.bot-message {
+  background-color: #f0f2f5;
+  color: #333;
+  align-self: flex-start;
+  border-bottom-left-radius: 5px;
+}
+
+.user-message {
+  background-color: #f97316;
+  color: white;
+  align-self: flex-end;
+  border-bottom-right-radius: 5px;
+  margin-left: auto; /* This will push the message to the right */
+}
+
+/* Food Recommendations */
+.food-recommendations {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+  margin-left: 10px;
+  max-width: 90%;
+}
+
+.food-recommendation-card {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  gap: 12px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+}
+
+.food-recommendation-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.food-info {
+  flex: 1;
+}
+
+.food-info h4 {
+  margin: 0 0 5px 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.food-price {
+  font-weight: bold;
+  color: #f97316;
+  margin: 2px 0;
+  font-size: 14px;
+}
+
+.food-description {
+  font-size: 12px;
+  color: #666;
+  margin: 5px 0 0 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.food-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+/* Typing Indicator */
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  column-gap: 4px;
+  padding: 10px 15px;
+}
+
+.typing-indicator span {
+  height: 8px;
+  width: 8px;
+  background: #858585;
+  border-radius: 50%;
+  display: block;
+  opacity: 0.4;
+}
+
+.typing-indicator span:nth-of-type(1) {
+  animation: pulse 1s infinite ease-in-out;
+}
+
+.typing-indicator span:nth-of-type(2) {
+  animation: pulse 1s infinite ease-in-out .2s;
+}
+
+.typing-indicator span:nth-of-type(3) {
+  animation: pulse 1s infinite ease-in-out .4s;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+}
+
+/* Chatbot Input */
+.chatbot-input-form {
+  display: flex;
+  padding: 10px;
+  border-top: 1px solid #eaeaea;
+}
+
+.chatbot-input {
+  flex: 1;
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  outline: none;
+  font-size: 14px;
+}
+
+.chatbot-input:focus {
+  border-color: #f97316;
+}
+
+.send-button {
+  background-color: #f97316;
+  color: white;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  margin-left: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.send-button:hover {
+  background-color: #f97316;
+}
+
+/* History Loading Indicator */
+.history-loading-indicator {
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(74, 108, 247, 0.2);
+  border-radius: 50%;
+  border-top-color: #f97316;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .chatbot-container {
+    bottom: 80px; /* Positioned above the shopping cart */
+    right: 20px; /* Maintain alignment with the right edge */
+    width: auto; /* Adjust width for toggle button */
+    height: auto; /* Adjust height for toggle button */
+  }
+
+  .chatbot-toggle {
+    width: 50px;
+    height: 50px;
+    bottom: 80px; /* Match the container's bottom position */
+    right: 20px; /* Match the container's right position */
+  }
+
+  .chatbot-window {
+    position: fixed; /* Ensure it covers the screen when opened */
+    width: 100%; /* Full width of the screen */
+    height: 100%; /* Full height of the screen */
+    bottom: 0; /* Align with the bottom of the screen */
+    right: 0; /* Align with the right of the screen */
+    border-radius: 0; /* Remove border radius for a seamless fit */
+    display: flex;
+    flex-direction: column;
+    z-index: 1001; /* Ensure it appears above other elements */
+  }
+
+  .chatbot-header {
+    font-size: 16px; /* Adjust font size for mobile */
+  }
+
+  .chatbot-input {
+    font-size: 14px; /* Adjust input font size for mobile */
+  }
+
+  .send-button {
+    font-size: 14px; /* Adjust button font size for mobile */
+  }
+}

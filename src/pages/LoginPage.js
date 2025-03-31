@@ -1,5 +1,5 @@
 import { useState } from "react";
-const BASE_URL = "http://54.85.77.70:8082";
+const BASE_URL = "http://185.234.247.196:8082";
 export default function LoginPage({ onLogin }) {
   const [customerName, setCustomerName] = useState("");
   const [error, setError] = useState(null);

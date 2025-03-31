@@ -8,7 +8,7 @@ export default function FoodCard({ item, addToCart }) {
       <Link to={`/product/${item.id}`} className="block">
         <div className="relative overflow-hidden rounded-lg mb-2 md:mb-3">
           <img
-            src={item.image || "https://via.placeholder.com/300x200"}
+            src={item.image }
             alt={item.name}
             className="w-full h-32 sm:h-40 md:h-44 lg:h-48 object-cover"
           />

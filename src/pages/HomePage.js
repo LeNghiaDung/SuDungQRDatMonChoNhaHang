@@ -6,7 +6,7 @@ import Navbar from "../components/Navbar";
 import CategoryTabs from "../components/CategoryTabs";
 import FoodCard from "../components/FoodCard";
 
-const BASE_URL = "http://54.85.77.70:8082";
+const BASE_URL = "http://185.234.247.196:8082";
 
 export default function HomePage() {
   const [activeCategory, setActiveCategory] = useState("Tất cả");
@@ -19,7 +19,7 @@ export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState(""); // State for search query
   const [showSearchBar, setShowSearchBar] = useState(false); // State to toggle search bar visibility
 
-  //Lấy danh sách danh mục
+  // Lấy danh sách danh mục
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -27,7 +27,6 @@ export default function HomePage() {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        console.log("response:", response);
         const data = await response.json();
         console.log("Categories response:", data);
 
@@ -46,14 +45,20 @@ export default function HomePage() {
     fetchCategories();
   }, []);
 
-  // Lấy danh sách món ăn
+  // Lấy danh sách món ăn theo danh mục
   useEffect(() => {
-    const fetchFoods = async () => {
+    const fetchFoodsByCategory = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        const response = await fetch(`${BASE_URL}/food/`);
+        const categoryObj = categories.find((cat) => cat.name === activeCategory);
+        const categoryId = categoryObj?.id === "all" ? "" : categoryObj?.id;
+
+        const endpoint = categoryId
+          ? `${BASE_URL}/food/category/${categoryId}`
+          : `${BASE_URL}/food/`;
+        const response = await fetch(endpoint);
         if (!response.ok) {
           throw new Error("Failed to fetch data");
         }
@@ -69,7 +74,7 @@ export default function HomePage() {
             image: item.imageUrl || "",
             status: item.status || "UNAVAILABLE",
             available: item.status === "AVAILABLE",
-            category: item.categoryId, // Ensure categoryId is used for filtering
+            category: item.categoryId,
           }));
           setFoodItems(formattedFoods);
         } else {
@@ -84,19 +89,12 @@ export default function HomePage() {
       }
     };
 
-    fetchFoods();
-  }, []);
+    fetchFoodsByCategory();
+  }, [activeCategory, categories]);
 
-  // Lọc món ăn theo danh mục và tìm kiếm
+  // Lọc món ăn theo tìm kiếm
   useEffect(() => {
     let filtered = foodItems;
-
-    if (activeCategory !== "Tất cả") {
-      const categoryObj = categories.find((cat) => cat.name === activeCategory);
-      filtered = filtered.filter((item) =>
-        categoryObj ? item.category === categoryObj.id : false
-      );
-    }
 
     if (searchQuery.trim() !== "") {
       filtered = filtered.filter((item) =>
@@ -105,7 +103,7 @@ export default function HomePage() {
     }
 
     setFilteredItems(filtered);
-  }, [activeCategory, foodItems, categories, searchQuery]);
+  }, [foodItems, searchQuery]);
 
   if (error) {
     return (
@@ -127,7 +125,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="mx-auto bg-white min-h-screen pb-20">
-        <div className="p-4 md:p-6 font-bold text-xl md:text-2xl lg:text-3xl text-center">LOGO</div>
+        <div className="p-4 md:p-6 font-bold text-xl md:text-2xl lg:text-3xl text-center">ỨNG DỤNG ĐẶT MÓN ĂN</div>
 
         {showSearchBar && (
           <div className="p-4 md:p-6 flex justify-center">
@@ -153,7 +151,7 @@ export default function HomePage() {
               setActiveCategory={setActiveCategory}
             />
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-6 lg:gap-8 p-4 md:p-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-6 lg:gap-8 p-4 md:p-6">
               {filteredItems.length > 0 ? (
                 filteredItems.map((item) => (
                   <FoodCard key={item.id} item={item} addToCart={addToCart} disabled={item.status === "UNAVAILABLE"} />

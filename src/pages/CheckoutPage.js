@@ -7,8 +7,8 @@ import { useCart } from "../context/CartContext"
 import Navbar from "../components/Navbar"
 
 // URL cơ sở cho API
-const BASE_URL = "http://54.85.77.70:8082"
-
+const BASE_URL = "http://185.234.247.196:8082"
+const diningTableId = "1b0ca475-5323-475c-8671-e5ce91cb8428"
 export default function CheckoutPage() {
   const navigate = useNavigate()
   const { cart, clearCart } = useCart()
@@ -35,65 +35,87 @@ export default function CheckoutPage() {
 
   const handlePayment = async () => {
     if (!paymentMethod) {
-      alert("Vui lòng chọn phương thức thanh toán")
-      return
+      alert("Vui lòng chọn phương thức thanh toán");
+      return;
     }
 
     if (cart.length === 0) {
-      alert("Giỏ hàng của bạn đang trống")
-      return
+      alert("Giỏ hàng của bạn đang trống");
+      return;
     }
 
     try {
-      setSubmitting(true)
+      setSubmitting(true);
 
-      // Chuẩn bị dữ liệu đơn hàng
-      const orderData = {
-        customerId: localStorage.getItem("userId") || "1", // Mặc định là '1' nếu không có
-        orderDetail: cart.map((item) => ({
-          foodId: item.id,
+      // Chuẩn bị dữ liệu hóa đơn
+      const invoiceData = {
+        items: cart.map((item) => ({
+          id: item.id,
+          name: item.name,
+          imageUrl: item.imageUrl || "",
+          priceAtOrder: item.price,
           quantity: item.quantity,
           totalPrice: item.price * item.quantity,
         })),
-        totalPrice: totalAmount,
+        diningTableName: "Table 1", // Replace with actual table name if available
+        customer: {
+          id: parseInt(localStorage.getItem("userId") || "1"), // Mặc định là '1' nếu không có
+          name: localStorage.getItem("userName") || "Guest", // Replace with actual customer name if available
+        },
+        paymentStatus: "PENDING",
         paymentMethod: paymentMethod,
-        status: "PENDING",
-      }
+        totalPrice: totalAmount,
+      };
 
-      console.log("Sending order data:", orderData)
+      console.log("Sending invoice data:", invoiceData);
 
-      // Gọi API để tạo đơn hàng
-      const response = await fetch(`${BASE_URL}/order/`, {
+      // Gọi API để tạo hóa đơn
+      const response = await fetch(`${BASE_URL}/invoice/customer/${invoiceData.customer.id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(orderData),
-      })
+        body: JSON.stringify(invoiceData),
+      });
 
-      const text = await response.text()
+      const text = await response.text();
 
       if (!text) {
-        throw new Error("Empty response from API")
+        throw new Error("Empty response from API");
       }
 
-      const result = JSON.parse(text)
-      console.log("Order created:", result)
+      const result = JSON.parse(text);
+      console.log("Invoice created:", result);
 
       if (result && result.status === 0) {
-        // Xóa giỏ hàng sau khi đặt hàng thành công
-        clearCart()
+        // Gọi API để xác nhận thanh toán
+        const confirmResponse = await fetch(`${BASE_URL}/invoice/confirmPayment/${result.data.id}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
-        // Chuyển hướng đến trang thanh toán thành công
-        navigate("/payment-success")
+        const confirmResult = await confirmResponse.json();
+        console.log("Payment confirmed:", confirmResult);
+
+        if (confirmResult && confirmResult.status === 0) {
+          // Xóa giỏ hàng sau khi thanh toán thành công
+          clearCart();
+
+          // Chuyển hướng đến trang thanh toán thành công
+          navigate("/payment-success");
+        } else {
+          throw new Error(confirmResult.message || "Không thể xác nhận thanh toán");
+        }
       } else {
-        throw new Error(result.message || "Không thể tạo đơn hàng")
+        throw new Error(result.message || "Không thể tạo hóa đơn");
       }
     } catch (err) {
-      setError("Không thể hoàn tất đơn hàng. Vui lòng thử lại sau.")
-      console.error("Error creating order:", err)
+      setError("Không thể hoàn tất thanh toán. Vui lòng thử lại sau.");
+      console.error("Error processing payment:", err);
     } finally {
-      setSubmitting(false)
+      setSubmitting(false);
     }
   }
 
