@@ -8,7 +8,7 @@ import Navbar from "../components/Navbar"
 
 // Base URL for API
 const BASE_URL = "http://185.234.247.196:8082"
-const diningTableId = "1b0ca475-5323-475c-8671-e5ce91cb8428"
+const diningTableId = "b704c7d1-708a-40de-b5ad-2e45c8da26c0"
 
 export default function CartPage() {
   const navigate = useNavigate()
@@ -204,8 +204,6 @@ export default function CartPage() {
           setError("Không tìm thấy ID khách hàng. Vui lòng đăng nhập lại.")
           return
         }
-
-        const diningTableId = "1b0ca475-5323-475c-8671-e5ce91cb8428" // Fixed dining table ID as a string
 
         // Prepare order data
         const newOrder = {

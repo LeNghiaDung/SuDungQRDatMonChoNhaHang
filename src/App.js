@@ -7,6 +7,7 @@ import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import PaymentSuccessPage from "./pages/PaymentSuccessPage";
 import LoginPage from "./pages/LoginPage";
+import AdminPage from "./pages/AdminPage";
 import "./App.css";
 import { use, useEffect } from "react";
 import Chatbot from "./components/Chatbot";
@@ -40,6 +41,7 @@ function App() {
               <Route path="/cart" element={<CartPage />} />
               <Route path="/checkout" element={<CheckoutPage />} />
               <Route path="/payment-success" element={<PaymentSuccessPage />} />
+              <Route path="/admin" element={<AdminPage />} />
             </Routes>
             <Chatbot />
           </>
